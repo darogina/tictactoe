@@ -3,6 +3,9 @@ PYTHON_EXISTS := $(shell command -v python >/dev/null 2>&1; echo $$?)
 PYTHON2_EXISTS := $(shell command -v python2 >/dev/null 2>&1; echo $$?)
 PYTHON3_EXISTS := $(shell command -v python3 >/dev/null 2>&1; echo $$?)
 DOCKER_EXISTS := $(shell command -v docker >/dev/null 2>&1; echo $$?)
+PODMAN_EXISTS := $(shell command -v podman >/dev/null 2>&1; echo $$?)
+
+IMAGE_NAME := tictactoe:latest
 
 help:
 	@echo "----------------------------------------------------------------------------------------------------"
@@ -16,11 +19,13 @@ help:
 	@echo "     rpm-uninstall: Uninstall the RPM"
 	@echo "     docker-build:  Build the Docker image"
 	@echo "     docker-run:    Run the Docker image"
+	@echo "     podman-build:  Build the Podman image"
+	@echo "     podman-run:    Run the Podman image"
 	@echo "     clean:         Perform clean of the project"
 	@echo ""
 	@echo "----------------------------------------------------------------------------------------------------"
 
-.PHONY: python docker
+.PHONY: python docker podman
 python:
 ifeq ($(PYTHON_EXISTS), 0)
 	$(eval PYTHON_ALIAS := python)
@@ -37,6 +42,11 @@ ifeq ($(DOCKER_EXISTS), 1)
 	$(error "Docker not installed")
 endif
 
+podman:
+ifeq ($(PODMAN_EXISTS), 1)
+	$(error "Podman not installed")
+endif
+
 run: python
 	$(PYTHON_ALIAS) tictactoe.py
 
@@ -50,10 +60,16 @@ rpm-uninstall:
 	yum remove -y tic-tac-toe
 
 docker-build: docker
-	docker build -t tictactoe:latest .
+	docker build -t $(IMAGE_NAME) .
 
 docker-run: docker
-	docker run --rm -it tictactoe:latest
+	docker run --rm -it $(IMAGE_NAME)
+
+podman-build: podman
+	podman build -t $(IMAGE_NAME) .
+
+podman-run: podman
+	podman run --rm -it $(IMAGE_NAME)
 
 clean: python
 	$(PYTHON_ALIAS) setup.py clean -a

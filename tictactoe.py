@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Written by  : David Rogina - github.com/darogina
 Description : A friendly game of Tic-Tac-Toe with a twist... You can't win!
