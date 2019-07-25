@@ -8,3 +8,5 @@ vent/
 tic_tac_toe.egg-info/
 __pycache__/
 **/*.pyc
+.vagrant/
+Vagrantfile
