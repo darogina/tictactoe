@@ -6,15 +6,9 @@ Description : A friendly game of Tic-Tac-Toe with a twist... You can't win!
             This script is fully compatible with both python 2 & 3
 """
 
-from __future__ import print_function
-
 import random
 import signal
 import sys
-
-if hasattr(__builtins__, 'raw_input'):
-    # Add compatibility for python2
-    input = raw_input
 
 
 def signal_handler(sig, frame):
@@ -22,6 +16,16 @@ def signal_handler(sig, frame):
     print('Goodbye!!')
     # sys.exit(0)
     sys.exit(sig)
+
+
+def backwards_compatible():
+    # Quick an dirty way of adding backwards compatibility. Ideally a better solution would be put in place like
+    # futures but this will make it so no extra packages need to be installed
+    try:
+        global input
+        input = raw_input
+    except NameError:
+        pass
 
 
 class TicTacToe:
@@ -222,15 +226,22 @@ class TicTacToe:
         return False
 
 
-if __name__ == '__main__':
+def main():
     # Register signal handler
     signal.signal(signal.SIGINT, signal_handler)
+
+    # Fix input so it works with python2
+    backwards_compatible()
 
     game = TicTacToe()
     play_game = True
     while play_game:
         game.start()
-        if not input("Do you want to play again? y or n : ").lower().startswith('y'):
+        if not str(input("Do you want to play again? y or n : ")).lower().startswith('y'):
             play_game = False
 
     print("Goodbye!!")
+
+
+if __name__ == '__main__':
+    main()
