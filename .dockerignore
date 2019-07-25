@@ -1,0 +1,10 @@
+.build/
+.dist/
+.gitignore
+Makefile
+README.md
+setup.py
+vent/
+tic_tac_toe.egg-info/
+__pycache__/
+**/*.pyc

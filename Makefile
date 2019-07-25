@@ -2,6 +2,7 @@ PYTHON_ALIAS ?= python
 PYTHON_EXISTS := $(shell command -v python >/dev/null 2>&1; echo $$?)
 PYTHON2_EXISTS := $(shell command -v python2 >/dev/null 2>&1; echo $$?)
 PYTHON3_EXISTS := $(shell command -v python3 >/dev/null 2>&1; echo $$?)
+DOCKER_EXISTS := $(shell command -v docker >/dev/null 2>&1; echo $$?)
 
 help:
 	@echo "----------------------------------------------------------------------------------------------------"
@@ -10,14 +11,16 @@ help:
 	@echo "   Commands:"
 	@echo "     help:          Show help text."
 	@echo "     run:           Run the game"
-	@echo "     rpm:           Build the rpm."
-	@echo "     install-rpm:   Install the built RPM"
-	@echo "     uninstall-rpm: Uninstall the RPM"
+	@echo "     build-rpm:     Build the rpm."
+	@echo "     rpm-install:   Install the built RPM"
+	@echo "     rpm-uninstall: Uninstall the RPM"
+	@echo "     docker-build:  Build the Docker image"
+	@echo "     docker-run:    Run the Docker image"
 	@echo "     clean:         Perform clean of the project"
 	@echo ""
 	@echo "----------------------------------------------------------------------------------------------------"
 
-.PHONY: python
+.PHONY: python docker
 python:
 ifeq ($(PYTHON_EXISTS), 0)
 	$(eval PYTHON_ALIAS := python)
@@ -29,17 +32,28 @@ else
 	$(error "Python not installed")
 endif
 
+docker:
+ifeq ($(DOCKER_EXISTS), 1)
+	$(error "Docker not installed")
+endif
+
 run: python
 	$(PYTHON_ALIAS) tictactoe.py
 
 rpm: python
 	$(PYTHON_ALIAS) setup.py bdist_rpm
 
-install-rpm: uninstall-rpm rpm
+rpm-install: rpm-uninstall rpm
 	yum localinstall -y ./dist/tic-tac-toe-*.noarch.rpm --skip-broken
 
-uninstall-rpm:
+rpm-uninstall:
 	yum remove -y tic-tac-toe
+
+docker-build: docker
+	docker build -t tictactoe:latest .
+
+docker-run: docker
+	docker run --rm -it tictactoe:latest
 
 clean: python
 	$(PYTHON_ALIAS) setup.py clean -a
