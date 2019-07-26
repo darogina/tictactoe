@@ -62,13 +62,13 @@ rpm-uninstall:
 docker-build: docker
 	docker build -t $(IMAGE_NAME) .
 
-docker-run: docker
+docker-run: docker docker-build
 	docker run --rm -it $(IMAGE_NAME)
 
 podman-build: podman
 	podman build -t $(IMAGE_NAME) .
 
-podman-run: podman
+podman-run: podman podman-build
 	podman run --rm -it $(IMAGE_NAME)
 
 clean: python
